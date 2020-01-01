@@ -1,7 +1,7 @@
 [package]
-name = "screeps-starter-rust"
-version = "0.0.0"
-authors = []
+name = "toddaaro_screeps"
+version = "0.0.1"
+authors = ["toddaaro <social@aarontodd.name>"]
 edition = "2018"
 
 [dependencies]
@@ -9,6 +9,7 @@ stdweb = "0.4"
 log = "0.4"
 fern = "0.5"
 screeps-game-api = "0.7"
+rand = { version = "0.7.2", features = ["small_rng", "std"] }
 
 [profile.release]
 panic = "abort"
