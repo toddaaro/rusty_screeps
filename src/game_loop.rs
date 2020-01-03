@@ -1,10 +1,10 @@
 use log::*;
 use screeps::memory::MemoryReference;
-use screeps::{prelude::*, Part, ReturnCode, SpawnOptions};
+use screeps::{find, prelude::*, Part, ReturnCode, SpawnOptions};
 
 use crate::util::cleanup_memory;
 
-use crate::{harvester, filler};
+use crate::{filler, harvester, tower};
 
 pub fn game_loop() {
     debug!("loop starting! CPU: {}", screeps::game::cpu::get_used());
@@ -12,6 +12,23 @@ pub fn game_loop() {
     let mem = screeps::memory::root();
     mem.set("worked_rooms", vec!["W44S28"]);
     mem.set("home_room", "W44S28");
+
+    debug!("running towers");
+    let mut towers: std::vec::Vec<screeps::objects::StructureTower> = vec![];
+    for room in screeps::game::rooms::values() {
+        let structures = room.find(find::STRUCTURES);
+        for my_structure in structures {
+            match my_structure {
+                screeps::Structure::Tower(my_tower) => {
+                    towers.push(my_tower);
+                }
+                _ => (),
+            };
+        }
+    }
+    for my_tower in towers {
+        tower::run_tower(my_tower);
+    }
 
     debug!("running spawns");
     for spawn in screeps::game::spawns::values() {

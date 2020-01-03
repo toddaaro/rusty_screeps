@@ -4,6 +4,7 @@ mod filler;
 mod game_loop;
 mod harvester;
 mod logging;
+mod tower;
 mod util;
 
 fn main() {

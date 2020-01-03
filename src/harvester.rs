@@ -96,7 +96,22 @@ fn spend_energy(creep: screeps::objects::Creep) {
 
     let construction_sites = home_room.find(find::MY_CONSTRUCTION_SITES);
 
-    if construction_sites.len() > 0 {
+    let structures = home_room.find(find::STRUCTURES);
+    let mut towers: std::vec::Vec<screeps::objects::StructureTower> = vec![];
+    for my_structure in structures {
+        match my_structure {
+            screeps::Structure::Tower(my_tower) => {
+                if my_tower.store_free_capacity(Some(ResourceType::Energy)) > 0 {
+                    towers.push(my_tower);
+                }
+            }
+            _ => (),
+        };
+    }
+
+    if towers.len() > 0 {
+        fill(creep, &towers[0]);
+    } else if construction_sites.len() > 0 {
         build(creep, &construction_sites[0]);
     } else {
         upgrade_controller(creep, &home_room.controller().unwrap());
@@ -121,5 +136,16 @@ fn build(creep: screeps::objects::Creep, target_site: &screeps::objects::Constru
         creep.move_to(target_site);
     } else if r != ReturnCode::Ok {
         warn!("couldn't build: {:?}", r);
+    }
+}
+
+fn fill(creep: screeps::objects::Creep, fill_target: &screeps::objects::StructureTower) {
+    let r = creep.transfer_all(fill_target, ResourceType::Energy);
+    if r == ReturnCode::NotInRange {
+        creep.move_to(fill_target);
+    } else if r == ReturnCode::Full {
+        creep.memory().del("fill_target");
+    } else if r != ReturnCode::Ok {
+        warn!("couldn't transfer: {:?}", r);
     }
 }
