@@ -83,18 +83,42 @@ pub fn run_harvester(creep: screeps::objects::Creep) {
         if creep.energy() == 0 {
             creep.memory().set("harvesting", true);
         } else {
-            let mem = screeps::memory::root();
-            let home_room_name_str = mem.string("home_room").unwrap().unwrap();
-            let home_room_name = screeps::local::RoomName::new(&home_room_name_str).unwrap();
-            let home_room = screeps::game::rooms::get(home_room_name).unwrap();
-            let master_controller = home_room.controller().unwrap();
-
-            let r = creep.upgrade_controller(&master_controller);
-            if r == ReturnCode::NotInRange {
-                creep.move_to(&master_controller);
-            } else if r != ReturnCode::Ok {
-                warn!("couldn't upgrade: {:?}", r);
-            }
+            spend_energy(creep)
         }
+    }
+}
+
+fn spend_energy(creep: screeps::objects::Creep) {
+
+    let mem = screeps::memory::root();
+    let home_room_name_str = mem.string("home_room").unwrap().unwrap();
+    let home_room_name = screeps::local::RoomName::new(&home_room_name_str).unwrap();
+    let home_room = screeps::game::rooms::get(home_room_name).unwrap();    
+
+    let construction_sites = home_room.find(find::MY_CONSTRUCTION_SITES);
+
+    if construction_sites.len() > 0 {
+        build(creep, &construction_sites[0]);
+    } else {
+        upgrade_controller(creep, &home_room.controller().unwrap());
+    };
+
+}
+
+fn upgrade_controller(creep: screeps::objects::Creep, controller: &screeps::objects::StructureController) {
+    let r = creep.upgrade_controller(controller);
+    if r == ReturnCode::NotInRange {
+        creep.move_to(controller);
+    } else if r != ReturnCode::Ok {
+        warn!("couldn't upgrade: {:?}", r);
+    }
+}
+
+fn build(creep: screeps::objects::Creep, target_site: &screeps::objects::ConstructionSite) {
+    let r = creep.build(target_site);
+    if r == ReturnCode::NotInRange {
+        creep.move_to(target_site);
+    } else if r != ReturnCode::Ok {
+        warn!("couldn't build: {:?}", r);
     }
 }
