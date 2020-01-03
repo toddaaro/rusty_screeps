@@ -8,7 +8,7 @@ edition = "2018"
 stdweb = "0.4"
 log = "0.4"
 fern = "0.5"
-screeps-game-api = "0.7"
+screeps-game-api = { git = "https://github.com/rustyscreeps/screeps-game-api", branch = "master" }
 rand = { version = "0.7.2", features = ["small_rng", "std"] }
 
 [profile.release]

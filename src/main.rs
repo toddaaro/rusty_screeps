@@ -1,5 +1,6 @@
 use stdweb::js;
 
+mod filler;
 mod game_loop;
 mod harvester;
 mod logging;

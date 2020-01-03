@@ -4,7 +4,7 @@ use screeps::{prelude::*, Part, ReturnCode, SpawnOptions};
 
 use crate::util::cleanup_memory;
 
-use crate::harvester;
+use crate::{harvester, filler};
 
 pub fn game_loop() {
     debug!("loop starting! CPU: {}", screeps::game::cpu::get_used());
@@ -53,6 +53,8 @@ pub fn game_loop() {
         let creep_type = creep.memory().string("type").unwrap();
         if creep_type == Some("harvester".to_string()) {
             harvester::run_harvester(creep);
+        } else if creep_type == Some("filler".to_string()) {
+            filler::run_filler(creep);
         }
     }
 

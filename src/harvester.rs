@@ -89,11 +89,10 @@ pub fn run_harvester(creep: screeps::objects::Creep) {
 }
 
 fn spend_energy(creep: screeps::objects::Creep) {
-
     let mem = screeps::memory::root();
     let home_room_name_str = mem.string("home_room").unwrap().unwrap();
     let home_room_name = screeps::local::RoomName::new(&home_room_name_str).unwrap();
-    let home_room = screeps::game::rooms::get(home_room_name).unwrap();    
+    let home_room = screeps::game::rooms::get(home_room_name).unwrap();
 
     let construction_sites = home_room.find(find::MY_CONSTRUCTION_SITES);
 
@@ -102,10 +101,12 @@ fn spend_energy(creep: screeps::objects::Creep) {
     } else {
         upgrade_controller(creep, &home_room.controller().unwrap());
     };
-
 }
 
-fn upgrade_controller(creep: screeps::objects::Creep, controller: &screeps::objects::StructureController) {
+fn upgrade_controller(
+    creep: screeps::objects::Creep,
+    controller: &screeps::objects::StructureController,
+) {
     let r = creep.upgrade_controller(controller);
     if r == ReturnCode::NotInRange {
         creep.move_to(controller);
