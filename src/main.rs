@@ -1,9 +1,9 @@
 use stdweb::js;
 
-mod logging;
-mod util;
 mod game_loop;
 mod harvester;
+mod logging;
+mod util;
 
 fn main() {
     logging::setup_logging(logging::Info);
