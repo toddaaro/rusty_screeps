@@ -12,16 +12,12 @@ pub fn game_loop() {
 
     debug!("running the world setup, if not done");
     let mem = screeps::memory::root();
-    if mem.get::<Vec<String>>("worked_rooms").unwrap().is_none() {
-        warn!("setting the global goals!");
-        let worked_rooms = vec!["W44S28"];
-        mem.set("worked_rooms", worked_rooms);
-        let home_room = screeps::game::rooms::get(screeps::local::RoomName::new("W44S28").unwrap()).unwrap();
-        mem.set("home_room", home_room);
-    }
-
-    //let worked_rooms: Vec<String> = mem.arr("worked_rooms").unwrap().unwrap();
-    //let home_room = mem.get::<screeps::objects::Room>("home_room").unwrap().unwrap();
+    //if mem.get::<Vec<String>>("worked_rooms").unwrap().is_none() {
+    warn!("setting the global goals!");
+    let worked_rooms = vec!["W44S28"];
+    mem.set("worked_rooms", worked_rooms);
+    mem.set("home_room", "W44S28");
+    //}
 
     debug!("running spawns");
     for spawn in screeps::game::spawns::values() {
@@ -61,7 +57,9 @@ pub fn game_loop() {
             continue;
         }
 
+        warn!("unwrapping creep type");
         let creep_type = creep.memory().string("type").unwrap();
+        warn!("found type: {:?} for creep {:?}", creep_type, creep.name());
         if creep_type == Some("harvester".to_string()) {
             harvester::run_harvester(creep);
         }
@@ -78,12 +76,6 @@ pub fn game_loop() {
 
             if creep.memory().bool("harvesting") {
 
-                
-                // some randomness! but in the wrong place so it borked the poor creeps
-                //let sources = &creep.room().find(find::SOURCES);
-                //let time = game::time();
-                //let mut rng = rand::rngs::SmallRng::from_seed(transform_u32_to_array_of_u8_x4(time));            
-                //let source = sources.choose(&mut rng).unwrap();
                 let source = &creep.room().find(find::SOURCES)[0];
 
                 if creep.pos().is_near_to(source) {
