@@ -9,8 +9,8 @@ pub fn game_loop() {
     let mem = screeps::memory::root();
     mem.set("worked_rooms", vec!["W44S28"]);
     mem.set("home_room", "W44S28");
-    mem.set("harvesters", 6);
-    mem.set("fillers", 0);
+    mem.set("harvesters", 8);
+    mem.set("fillers", 1);
 
     debug!("running towers");
     let mut towers: std::vec::Vec<screeps::objects::StructureTower> = vec![];

@@ -116,12 +116,22 @@ fn spend_energy(creep: screeps::objects::Creep) {
         };
     }
 
-    if towers.len() > 0 {
+    let is_small = creep.body().len() <= 5;
+
+    if is_small && towers.len() > 0 {
         fill(creep, &towers[0]);
-    } else if extensions.len() > 0 {
+    } else if is_small && extensions.len() > 0 {
         fill(creep, &extensions[0]);
+    } else if home_room.storage().unwrap().energy() < 2000 {
+        let the_storage = home_room.storage().unwrap();
+        let as_structure = screeps::objects::Structure::Storage(the_storage);
+        fill(creep, &as_structure);
     } else if construction_sites.len() > 0 {
         build(creep, &construction_sites[0]);
+    } else if home_room.storage().unwrap().energy() < 25000 {
+        let the_storage = home_room.storage().unwrap();
+        let as_structure = screeps::objects::Structure::Storage(the_storage);
+        fill(creep, &as_structure);
     } else {
         upgrade_controller(creep, &home_room.controller().unwrap());
     };
