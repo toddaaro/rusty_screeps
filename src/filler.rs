@@ -46,6 +46,11 @@ pub fn run_filler(creep: screeps::objects::Creep) {
                             extensions.push(my_structure);
                         }
                     }
+                    screeps::Structure::Spawn(ref my_spawn) => {
+                        if my_spawn.store_free_capacity(Some(ResourceType::Energy)) > 0 {
+                            extensions.push(my_structure);
+                        }
+                    }
                     _ => (),
                 };
             }
