@@ -1,5 +1,6 @@
 use log::*;
 use screeps::{find, prelude::*, ObjectId, ResourceType, ReturnCode};
+use std::cmp::min;
 use std::collections::HashMap;
 
 pub fn run_harvester(creep: screeps::objects::Creep) {
@@ -97,12 +98,18 @@ fn spend_energy(creep: screeps::objects::Creep) {
     let construction_sites = home_room.find(find::MY_CONSTRUCTION_SITES);
 
     let structures = home_room.find(find::STRUCTURES);
-    let mut towers: std::vec::Vec<screeps::objects::StructureTower> = vec![];
+    let mut towers: std::vec::Vec<screeps::objects::Structure> = vec![];
+    let mut extensions: std::vec::Vec<screeps::objects::Structure> = vec![];
     for my_structure in structures {
         match my_structure {
-            screeps::Structure::Tower(my_tower) => {
+            screeps::Structure::Tower(ref my_tower) => {
                 if my_tower.store_free_capacity(Some(ResourceType::Energy)) > 0 {
-                    towers.push(my_tower);
+                    towers.push(my_structure);
+                }
+            }
+            screeps::Structure::Extension(ref my_extension) => {
+                if my_extension.store_free_capacity(Some(ResourceType::Energy)) > 0 {
+                    extensions.push(my_structure);
                 }
             }
             _ => (),
@@ -111,6 +118,8 @@ fn spend_energy(creep: screeps::objects::Creep) {
 
     if towers.len() > 0 {
         fill(creep, &towers[0]);
+    } else if extensions.len() > 0 {
+        fill(creep, &extensions[0]);
     } else if construction_sites.len() > 0 {
         build(creep, &construction_sites[0]);
     } else {
@@ -139,8 +148,15 @@ fn build(creep: screeps::objects::Creep, target_site: &screeps::objects::Constru
     }
 }
 
-fn fill(creep: screeps::objects::Creep, fill_target: &screeps::objects::StructureTower) {
-    let r = creep.transfer_all(fill_target, ResourceType::Energy);
+fn fill(creep: screeps::objects::Creep, fill_target: &screeps::objects::Structure) {
+    let transferable = fill_target.as_transferable().unwrap();
+    let has_store = fill_target.as_has_store().unwrap();
+
+    let empty_space = has_store.store_free_capacity(Some(ResourceType::Energy));
+    let creep_energy = creep.energy();
+    let amount = min(creep_energy, empty_space);
+
+    let r = creep.transfer_amount(transferable, ResourceType::Energy, amount);
     if r == ReturnCode::NotInRange {
         creep.move_to(fill_target);
     } else if r == ReturnCode::Full {

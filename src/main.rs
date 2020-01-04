@@ -4,6 +4,7 @@ mod filler;
 mod game_loop;
 mod harvester;
 mod logging;
+mod spawner;
 mod tower;
 mod util;
 

@@ -1,10 +1,7 @@
-use log::*;
-use screeps::memory::MemoryReference;
-use screeps::{find, prelude::*, Part, ReturnCode, SpawnOptions};
-
 use crate::util::cleanup_memory;
-
-use crate::{filler, harvester, tower};
+use crate::{filler, harvester, spawner, tower};
+use log::*;
+use screeps::{find, prelude::*};
 
 pub fn game_loop() {
     debug!("loop starting! CPU: {}", screeps::game::cpu::get_used());
@@ -12,6 +9,8 @@ pub fn game_loop() {
     let mem = screeps::memory::root();
     mem.set("worked_rooms", vec!["W44S28"]);
     mem.set("home_room", "W44S28");
+    mem.set("harvesters", 8);
+    mem.set("fillers", 0);
 
     debug!("running towers");
     let mut towers: std::vec::Vec<screeps::objects::StructureTower> = vec![];
@@ -32,31 +31,7 @@ pub fn game_loop() {
 
     debug!("running spawns");
     for spawn in screeps::game::spawns::values() {
-        debug!("running spawn {}", spawn.name());
-        let body = [Part::Move, Part::Move, Part::Carry, Part::Work];
-
-        if spawn.energy() >= body.iter().map(|p| p.cost()).sum() {
-            // create a unique name, spawn.
-            let name_base = screeps::game::time();
-            let mut additional = 0;
-            let res = loop {
-                let name = format!("{}-{}", name_base, additional);
-                let mem = MemoryReference::new();
-                mem.set("type", "harvester");
-                let options = SpawnOptions::new().memory(mem);
-                let res = spawn.spawn_creep_with_options(&body, &name, &options);
-
-                if res == ReturnCode::NameExists {
-                    additional += 1;
-                } else {
-                    break res;
-                }
-            };
-
-            if res != ReturnCode::Ok {
-                warn!("couldn't spawn: {:?}", res);
-            }
-        }
+        spawner::run_spawn(spawn);
     }
 
     debug!("running creeps");
