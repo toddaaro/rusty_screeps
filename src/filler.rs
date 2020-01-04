@@ -1,5 +1,5 @@
 use log::*;
-use screeps::{find, prelude::*, ObjectId, ResourceType, ReturnCode}; 
+use screeps::{find, prelude::*, ResourceType, ReturnCode};
 use std::cmp::min;
 
 pub fn run_filler(creep: screeps::objects::Creep) {
@@ -29,42 +29,31 @@ pub fn run_filler(creep: screeps::objects::Creep) {
         }
     } else {
         if creep.energy() == 0 {
-            creep.memory().del("fill_target");
             creep.memory().set("withdrawing", true);
-        } else if creep.memory().string("fill_target").unwrap().is_none() {
+        } else {
             let structures = home_room.find(find::STRUCTURES);
-            let mut fillable: std::vec::Vec<screeps::Structure> = vec![];
+            let mut towers: std::vec::Vec<screeps::objects::Structure> = vec![];
+            let mut extensions: std::vec::Vec<screeps::objects::Structure> = vec![];
             for my_structure in structures {
                 match my_structure {
-                    screeps::Structure::Storage(_) => (),
-                    _ => {
-                        match my_structure.as_has_store() {
-                            Some(with_store) => {
-                                if with_store.store_free_capacity(Some(ResourceType::Energy)) > 0 {
-                                    fillable.push(my_structure);
-                                }
-                            }
-                            None => (),
+                    screeps::Structure::Tower(ref my_tower) => {
+                        if my_tower.store_free_capacity(Some(ResourceType::Energy)) > 0 {
+                            towers.push(my_structure);
                         }
                     }
-                }
+                    screeps::Structure::Extension(ref my_extension) => {
+                        if my_extension.store_free_capacity(Some(ResourceType::Energy)) > 0 {
+                            extensions.push(my_structure);
+                        }
+                    }
+                    _ => (),
+                };
             }
-
-            let fill_target = fillable[0].id();
-            creep.memory().set("fill_target", fill_target.to_string());
-        } else {
-            warn!("in that fill target branch");
-            let fill_target_str = creep.memory().string("fill_target");
-            warn!("got it from memory");
-            let fill_target_id: ObjectId<screeps::objects::Structure> =
-                fill_target_str.unwrap().unwrap().parse().unwrap();
-            warn!("got the id form");
-            let fill_target_structure = screeps::game::get_object_typed(fill_target_id)
-                .unwrap()
-                .unwrap();
-            warn!("got the structure");
-
-            fill(creep, &fill_target_structure);
+            if towers.len() > 0 {
+                fill(creep, &towers[0]);
+            } else if extensions.len() > 0 {
+                fill(creep, &extensions[0]);
+            }
         }
     }
 }
