@@ -7,12 +7,12 @@ pub fn game_loop() {
     debug!("loop starting! CPU: {}", screeps::game::cpu::get_used());
 
     let mem = screeps::memory::root();
-    mem.set("worked_rooms", vec!["W44S28", "W43S28"]);
+    mem.set("worked_rooms", vec!["W44S28", "W43S28", "W44S29"]);
     mem.set("home_room", "W44S28");
-    mem.set("harvesters", 16);
+    mem.set("harvesters", 20);
     mem.set("fillers", 2);
-    mem.set("reservers", 1);
-    mem.set("reserved_rooms", vec!["W43S28"]);
+    mem.set("reservers", 2);
+    mem.set("reserved_rooms", vec!["W43S28", "W44S29"]);
     mem.set("upgraders", 5);
 
     debug!("running towers");

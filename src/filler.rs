@@ -37,7 +37,7 @@ pub fn run_filler(creep: screeps::objects::Creep) {
             for my_structure in structures {
                 match my_structure {
                     screeps::Structure::Tower(ref my_tower) => {
-                        if my_tower.store_free_capacity(Some(ResourceType::Energy)) > 0 {
+                        if my_tower.store_free_capacity(Some(ResourceType::Energy)) > 100 {
                             towers.push(my_structure);
                         }
                     }
