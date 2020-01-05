@@ -1,6 +1,6 @@
+use crate::creep_actions;
 use log::*;
 use screeps::{find, prelude::*, ObjectId, ResourceType, ReturnCode};
-use std::cmp::min;
 use std::collections::HashMap;
 
 pub fn run_harvester(creep: screeps::objects::Creep) {
@@ -119,63 +119,24 @@ fn spend_energy(creep: screeps::objects::Creep) {
     let is_small = creep.body().len() <= 5;
 
     if is_small && towers.len() > 0 {
-        fill(creep, &towers[0]);
+        creep_actions::fill(creep, &towers[0]);
     } else if is_small && extensions.len() > 0 {
-        fill(creep, &extensions[0]);
+        creep_actions::fill(creep, &extensions[0]);
     } else if home_room.storage().unwrap().energy() < 2000 {
         let the_storage = home_room.storage().unwrap();
         let as_structure = screeps::objects::Structure::Storage(the_storage);
-        fill(creep, &as_structure);
+        creep_actions::fill(creep, &as_structure);
     } else if construction_sites.len() > 0 {
-        build(creep, &construction_sites[0]);
+        creep_actions::build(creep, &construction_sites[0]);
     } else if home_room.storage().unwrap().energy() < 25000 {
         let the_storage = home_room.storage().unwrap();
         let as_structure = screeps::objects::Structure::Storage(the_storage);
-        fill(creep, &as_structure);
+        creep_actions::fill(creep, &as_structure);
     } else if home_room.storage().unwrap().energy() < 250000 && !is_small {
         let the_storage = home_room.storage().unwrap();
         let as_structure = screeps::objects::Structure::Storage(the_storage);
-        fill(creep, &as_structure);
+        creep_actions::fill(creep, &as_structure);
     } else {
-        upgrade_controller(creep, &home_room.controller().unwrap());
+        creep_actions::upgrade_controller(creep, &home_room.controller().unwrap());
     };
-}
-
-fn upgrade_controller(
-    creep: screeps::objects::Creep,
-    controller: &screeps::objects::StructureController,
-) {
-    let r = creep.upgrade_controller(controller);
-    if r == ReturnCode::NotInRange {
-        creep.move_to(controller);
-    } else if r != ReturnCode::Ok {
-        warn!("couldn't upgrade: {:?}", r);
-    }
-}
-
-fn build(creep: screeps::objects::Creep, target_site: &screeps::objects::ConstructionSite) {
-    let r = creep.build(target_site);
-    if r == ReturnCode::NotInRange {
-        creep.move_to(target_site);
-    } else if r != ReturnCode::Ok {
-        warn!("couldn't build: {:?}", r);
-    }
-}
-
-fn fill(creep: screeps::objects::Creep, fill_target: &screeps::objects::Structure) {
-    let transferable = fill_target.as_transferable().unwrap();
-    let has_store = fill_target.as_has_store().unwrap();
-
-    let empty_space = has_store.store_free_capacity(Some(ResourceType::Energy));
-    let creep_energy = creep.energy();
-    let amount = min(creep_energy, empty_space);
-
-    let r = creep.transfer_amount(transferable, ResourceType::Energy, amount);
-    if r == ReturnCode::NotInRange {
-        creep.move_to(fill_target);
-    } else if r == ReturnCode::Full {
-        creep.memory().del("fill_target");
-    } else if r != ReturnCode::Ok {
-        warn!("couldn't transfer: {:?}", r);
-    }
 }

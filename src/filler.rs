@@ -1,6 +1,6 @@
+use crate::creep_actions;
 use log::*;
 use screeps::{find, prelude::*, ResourceType, ReturnCode};
-use std::cmp::min;
 
 pub fn run_filler(creep: screeps::objects::Creep) {
     let name = creep.name();
@@ -55,28 +55,10 @@ pub fn run_filler(creep: screeps::objects::Creep) {
                 };
             }
             if towers.len() > 0 {
-                fill(creep, &towers[0]);
+                creep_actions::fill(creep, &towers[0]);
             } else if extensions.len() > 0 {
-                fill(creep, &extensions[0]);
+                creep_actions::fill(creep, &extensions[0]);
             }
         }
-    }
-}
-
-fn fill(creep: screeps::objects::Creep, fill_target: &screeps::objects::Structure) {
-    let transferable = fill_target.as_transferable().unwrap();
-    let has_store = fill_target.as_has_store().unwrap();
-
-    let empty_space = has_store.store_free_capacity(Some(ResourceType::Energy));
-    let creep_energy = creep.energy();
-    let amount = min(creep_energy, empty_space);
-
-    let r = creep.transfer_amount(transferable, ResourceType::Energy, amount);
-    if r == ReturnCode::NotInRange {
-        creep.move_to(fill_target);
-    } else if r == ReturnCode::Full {
-        creep.memory().del("fill_target");
-    } else if r != ReturnCode::Ok {
-        warn!("couldn't transfer: {:?}", r);
     }
 }

@@ -1,3 +1,4 @@
+use crate::creep_actions;
 use log::*;
 use screeps::{prelude::*, ResourceType, ReturnCode};
 
@@ -30,19 +31,7 @@ pub fn run_upgrader(creep: screeps::objects::Creep) {
         if creep.energy() == 0 {
             creep.memory().set("withdrawing", true);
         } else {
-            upgrade_controller(creep, &home_room.controller().unwrap());
+            creep_actions::upgrade_controller(creep, &home_room.controller().unwrap());
         }
-    }
-}
-
-fn upgrade_controller(
-    creep: screeps::objects::Creep,
-    controller: &screeps::objects::StructureController,
-) {
-    let r = creep.upgrade_controller(controller);
-    if r == ReturnCode::NotInRange {
-        creep.move_to(controller);
-    } else if r != ReturnCode::Ok {
-        warn!("couldn't upgrade: {:?}", r);
     }
 }

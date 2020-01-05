@@ -1,5 +1,6 @@
+use crate::creep_actions;
 use log::*;
-use screeps::{prelude::*, ReturnCode};
+use screeps::prelude::*;
 use std::collections::HashMap;
 
 pub fn run_reserver(creep: screeps::objects::Creep) {
@@ -43,7 +44,7 @@ pub fn run_reserver(creep: screeps::objects::Creep) {
         match room_result {
             Some(room) => {
                 let reserve_target = room.controller().unwrap();
-                reserve(creep, &reserve_target);
+                creep_actions::reserve(creep, &reserve_target);
             }
             _ => {
                 let exit_direction =
@@ -69,14 +70,5 @@ pub fn run_reserver(creep: screeps::objects::Creep) {
                 creep.move_to(&exit);
             }
         }
-    }
-}
-
-fn reserve(creep: screeps::objects::Creep, target: &screeps::objects::StructureController) {
-    let r = creep.reserve_controller(target);
-    if r == ReturnCode::NotInRange {
-        creep.move_to(target);
-    } else if r != ReturnCode::Ok {
-        warn!("couldn't reserve: {:?}", r);
     }
 }

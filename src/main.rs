@@ -1,5 +1,6 @@
 use stdweb::js;
 
+mod creep_actions;
 mod filler;
 mod game_loop;
 mod harvester;
