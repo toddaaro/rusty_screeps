@@ -1,38 +1,15 @@
 use crate::creep_actions;
+use crate::job_manager;
 use log::*;
 use screeps::prelude::*;
-use std::collections::HashMap;
 
 pub fn run_reserver(creep: screeps::objects::Creep) {
     debug!("running reserver {:?}", creep.id());
 
     if creep.memory().string("reserve_target").unwrap().is_none() {
-        let mem = screeps::memory::root();
-        let reserved_rooms: std::vec::Vec<String> = mem.arr("reserved_rooms").unwrap().unwrap();
-
-        let mut worked_reservations = HashMap::new();
-
-        for room in reserved_rooms {
-            worked_reservations.entry(room).or_insert(0);
-        }
-
-        for creep in screeps::game::creeps::values() {
-            let target_opt = creep.memory().string("reserve_target").unwrap();
-            match target_opt {
-                Some(target) => {
-                    let count = worked_reservations.entry(target).or_insert(0);
-                    *count += 1;
-                }
-                None => (),
-            };
-        }
-
-        for (room_str, count) in worked_reservations {
-            if count == 0 {
-                creep.memory().set("reserve_target", room_str);
-                break;
-            }
-        }
+        let available_jobs = job_manager::build_job_set();
+        let reserve_target = &available_jobs.reserve_jobs[0];
+        creep.memory().set("reserve_target", reserve_target);
     }
     if creep.memory().string("reserve_target").unwrap().is_none() {
         warn!("tried to find a reserve target but failed, too many reservers?");

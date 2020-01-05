@@ -4,6 +4,7 @@ mod creep_actions;
 mod filler;
 mod game_loop;
 mod harvester;
+mod job_manager;
 mod logging;
 mod reserver;
 mod spawner;
