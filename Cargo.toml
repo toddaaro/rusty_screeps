@@ -1,6 +1,6 @@
 [package]
 name = "toddaaro_screeps"
-version = "0.0.7"
+version = "0.0.8"
 authors = ["toddaaro <social@aarontodd.name>"]
 edition = "2018"
 

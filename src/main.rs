@@ -7,6 +7,7 @@ mod logging;
 mod reserver;
 mod spawner;
 mod tower;
+mod upgrader;
 mod util;
 
 fn main() {

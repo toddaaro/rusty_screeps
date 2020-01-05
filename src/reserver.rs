@@ -9,8 +9,6 @@ pub fn run_reserver(creep: screeps::objects::Creep) {
         let mem = screeps::memory::root();
         let reserved_rooms: std::vec::Vec<String> = mem.arr("reserved_rooms").unwrap().unwrap();
 
-        warn!("got targets");
-
         let mut worked_reservations = HashMap::new();
 
         for room in reserved_rooms {

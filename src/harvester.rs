@@ -75,7 +75,7 @@ pub fn run_harvester(creep: screeps::objects::Creep) {
         if near_to_result {
             let r = creep.harvest(&source);
             if r != ReturnCode::Ok {
-                warn!("couldn't harvest: {:?}", r)
+                debug!("couldn't harvest: {:?}", r)
             }
         } else {
             creep.move_to(&source);
@@ -95,7 +95,7 @@ fn spend_energy(creep: screeps::objects::Creep) {
     let home_room_name = screeps::local::RoomName::new(&home_room_name_str).unwrap();
     let home_room = screeps::game::rooms::get(home_room_name).unwrap();
 
-    let construction_sites = home_room.find(find::MY_CONSTRUCTION_SITES);
+    let construction_sites = creep.room().unwrap().find(find::MY_CONSTRUCTION_SITES);
 
     let structures = home_room.find(find::STRUCTURES);
     let mut towers: std::vec::Vec<screeps::objects::Structure> = vec![];
@@ -129,6 +129,10 @@ fn spend_energy(creep: screeps::objects::Creep) {
     } else if construction_sites.len() > 0 {
         build(creep, &construction_sites[0]);
     } else if home_room.storage().unwrap().energy() < 25000 {
+        let the_storage = home_room.storage().unwrap();
+        let as_structure = screeps::objects::Structure::Storage(the_storage);
+        fill(creep, &as_structure);
+    } else if home_room.storage().unwrap().energy() < 250000 && !is_small {
         let the_storage = home_room.storage().unwrap();
         let as_structure = screeps::objects::Structure::Storage(the_storage);
         fill(creep, &as_structure);

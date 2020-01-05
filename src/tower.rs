@@ -1,5 +1,4 @@
 use log::*;
-use screeps::objects::Attackable;
 use screeps::{find, prelude::*};
 
 pub fn run_tower(tower: screeps::objects::StructureTower) {
@@ -11,11 +10,15 @@ pub fn run_tower(tower: screeps::objects::StructureTower) {
         tower.attack(&targets[0]);
     }
 
-    let my_structures = room.find(find::MY_STRUCTURES);
-    let mut repair_targets: std::vec::Vec<screeps::objects::OwnedStructure> = vec![];
+    let my_structures = room.find(find::STRUCTURES);
+    let mut repair_targets: std::vec::Vec<screeps::objects::Structure> = vec![];
     for structure in my_structures {
-        if structure.hits() + 800 < structure.hits_max() {
-            repair_targets.push(structure);
+        if structure.as_attackable().is_some() {
+            let hits = structure.as_attackable().unwrap().hits();
+            let hits_max = structure.as_attackable().unwrap().hits_max();
+            if hits + 800 < hits_max {
+                repair_targets.push(structure);
+            }
         }
     }
     if repair_targets.len() > 0 {

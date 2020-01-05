@@ -1,5 +1,5 @@
 use crate::util::cleanup_memory;
-use crate::{filler, harvester, reserver, spawner, tower};
+use crate::{filler, harvester, reserver, spawner, tower, upgrader};
 use log::*;
 use screeps::{find, prelude::*};
 
@@ -10,9 +10,10 @@ pub fn game_loop() {
     mem.set("worked_rooms", vec!["W44S28", "W43S28"]);
     mem.set("home_room", "W44S28");
     mem.set("harvesters", 16);
-    mem.set("fillers", 1);
+    mem.set("fillers", 2);
     mem.set("reservers", 1);
     mem.set("reserved_rooms", vec!["W43S28"]);
+    mem.set("upgraders", 5);
 
     debug!("running towers");
     let mut towers: std::vec::Vec<screeps::objects::StructureTower> = vec![];
@@ -51,6 +52,8 @@ pub fn game_loop() {
             filler::run_filler(creep);
         } else if creep_type == Some("reserver".to_string()) {
             reserver::run_reserver(creep);
+        } else if creep_type == Some("upgrader".to_string()) {
+            upgrader::run_upgrader(creep);
         }
     }
 
