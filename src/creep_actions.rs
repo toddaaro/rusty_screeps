@@ -57,7 +57,7 @@ pub fn repair_local_road(creep: &screeps::objects::Creep) -> bool {
     for structure in structures {
         match structure.as_attackable() {
             Some(attackable) => {
-                if attackable.hits() + 100 < attackable.hits_max() {
+                if attackable.hits() + 300 < attackable.hits_max() {
                     creep.repair(&structure);
                     return true;
                 }
