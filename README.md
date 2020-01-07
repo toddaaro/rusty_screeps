@@ -1,28 +1,19 @@
-# screeps-starter-rust
+# rusty_screeps
 
-Starter Rust AI for [Screeps][screeps], the JavaScript-based MMO game.
-
-This uses the [`screeps-game-api`] bindings from the [rustyscreeps] organization.
+A very hacky and not-at-all good set of fooling around with [Screeps][screeps], a Javascript 
+MMO Gamebut in Rust. This project is build using the [`screeps-game-api`] bindings from the 
+[rustyscreeps] organization.
 
 It's also recommended to use [`cargo-screeps`] for uploading the code, but the code should still
 compile if using [`cargo-web`] directly instead.
 
-The documentation is currently a bit sparse. API docs which list functions one
-can use are located at https://docs.rs/screeps-game-api/.
-
-Almost all crates on https://crates.io/ are usable (only things which interact with OS
-apis are broken).
-
-[`stdweb`](https://crates.io/crates/stdweb) can be used to embed custom JavaScript
-into code.
-
 Quickstart:
 
-```sh
+```bash
 # clone:
 
-git clone https://github.com/rustyscreeps/screeps-starter-rust.git
-cd screeps-starter-rust
+git clone https://github.com/toddaaro/rusty_screeps
+cd rusty_screeps
 
 # cli dependencies:
 
@@ -32,6 +23,9 @@ cargo install cargo-screeps
 
 cp example-screeps.toml screeps.toml
 nano screeps.toml
+
+# release new version
+./release 1.0.0 "we made it to 1.0.0!"
 
 # build tool:
 

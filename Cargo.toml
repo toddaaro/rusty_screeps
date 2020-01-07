@@ -1,5 +1,5 @@
 [package]
-name = "toddaaro_screeps"
+name = "rust_screeps"
 version = "0.1.5"
 authors = ["toddaaro <social@aarontodd.name>"]
 edition = "2018"
