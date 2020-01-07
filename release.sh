@@ -4,9 +4,9 @@
 
 cargo fmt
 sed -i "3 s/version.*/version = \"${1}\"/" Cargo.toml
+cargo screeps upload
 git add src
 git commit -am "${2}"
 git tag -a "v${1}" -m "${2}"
 git push
 git push origin "v${1}"
-cargo screeps upload
