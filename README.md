@@ -21,7 +21,7 @@ cargo install cargo-screeps
 
 # configure for uploading:
 
-cp example-screeps.toml screeps.toml
+cp screeps-no-token.toml screeps.toml
 nano screeps.toml
 
 # release new version
