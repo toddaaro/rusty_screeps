@@ -29,12 +29,12 @@ pub fn run_spawn(spawn: screeps::objects::StructureSpawn) {
             _ => (),
         }
     }
-    if current_reservers.len() < usize::try_from(reserver_goal).unwrap() {
-        build_reserver(spawn);
+    if current_fillers.len() < usize::try_from(filler_goal).unwrap() {
+        build_filler(spawn);
     } else if current_harvesters.len() < usize::try_from(harvester_goal).unwrap() {
         build_harvester(spawn);
-    } else if current_fillers.len() < usize::try_from(filler_goal).unwrap() {
-        build_filler(spawn);
+    } else if current_reservers.len() < usize::try_from(reserver_goal).unwrap() {
+        build_reserver(spawn);
     } else if current_upgraders.len() < usize::try_from(upgrader_goal).unwrap() {
         build_upgrader(spawn);
     }

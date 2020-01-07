@@ -39,16 +39,23 @@ pub fn run_harvester(
         let source_id_raw = creep.memory().string("source");
         let source_id: ObjectId<screeps::objects::Source> =
             source_id_raw.unwrap().unwrap().parse().unwrap();
-        let source = screeps::game::get_object_typed(source_id).unwrap().unwrap();
+        let source_opt = screeps::game::get_object_typed(source_id).unwrap();
 
-        let near_to_result = creep.pos().is_near_to(&source);
-        if near_to_result {
-            let r = creep.harvest(&source);
-            if r != ReturnCode::Ok {
-                debug!("couldn't harvest: {:?}", r)
+        match source_opt {
+            Some(source) => {
+                let near_to_result = creep.pos().is_near_to(&source);
+                if near_to_result {
+                    let r = creep.harvest(&source);
+                    if r != ReturnCode::Ok {
+                        debug!("couldn't harvest: {:?}", r)
+                    }
+                } else {
+                    creep.move_to(&source);
+                }
             }
-        } else {
-            creep.move_to(&source);
+            None => {
+                creep.memory().del("source");
+            }
         }
     } else {
         if creep.energy() == 0 {
