@@ -9,7 +9,7 @@ pub fn game_loop() {
     let mem = screeps::memory::root();
     mem.set("worked_rooms", vec!["W44S28", "W43S28", "W44S29"]);
     mem.set("home_room", "W44S28");
-    mem.set("harvesters", 15);
+    mem.set("harvesters", 14);
     mem.set("fillers", 2);
     mem.set("reservers", 2);
     mem.set("reserved_rooms", vec!["W43S28", "W44S29"]);
