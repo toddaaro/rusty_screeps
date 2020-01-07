@@ -9,3 +9,4 @@ git commit -am "${2}"
 git tag -a "v${1}" -m "${2}"
 git push
 git push origin "v${1}"
+cargo screeps upload
