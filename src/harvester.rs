@@ -67,6 +67,10 @@ pub fn run_harvester(
 }
 
 fn spend_energy(creep: screeps::objects::Creep) {
+    if creep_actions::repair_local_road(&creep) {
+        return;
+    }
+
     let mem = screeps::memory::root();
     let home_room_name_str = mem
         .string("home_room")
@@ -112,7 +116,7 @@ fn spend_energy(creep: screeps::objects::Creep) {
         let the_storage = home_room.storage().unwrap();
         let as_structure = screeps::objects::Structure::Storage(the_storage);
         creep_actions::fill(creep, &as_structure);
-    } else if home_room.storage().unwrap().energy() < 250000 && !is_small {
+    } else if home_room.storage().unwrap().energy() < 950000 && !is_small {
         let the_storage = home_room.storage().unwrap();
         let as_structure = screeps::objects::Structure::Storage(the_storage);
         creep_actions::fill(creep, &as_structure);

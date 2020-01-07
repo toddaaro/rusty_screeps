@@ -53,7 +53,7 @@ pub fn game_loop() {
         } else if creep_type == Some("filler".to_string()) {
             filler::run_filler(creep);
         } else if creep_type == Some("reserver".to_string()) {
-            reserver::run_reserver(creep);
+            reserver::run_reserver(creep, &mut available_jobs);
         } else if creep_type == Some("upgrader".to_string()) {
             upgrader::run_upgrader(creep);
         }

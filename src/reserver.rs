@@ -3,12 +3,14 @@ use crate::job_manager;
 use log::*;
 use screeps::prelude::*;
 
-pub fn run_reserver(creep: screeps::objects::Creep) {
+pub fn run_reserver(
+    creep: screeps::objects::Creep,
+    available_jobs: &mut job_manager::AvailableJobs,
+) {
     debug!("running reserver {:?}", creep.id());
 
     if creep.memory().string("reserve_target").unwrap().is_none() {
-        let available_jobs = job_manager::build_job_set();
-        let reserve_target = &available_jobs.reserve_jobs[0];
+        let reserve_target = available_jobs.pop_reserve_job();
         creep.memory().set("reserve_target", reserve_target);
     }
     if creep.memory().string("reserve_target").unwrap().is_none() {

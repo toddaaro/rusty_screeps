@@ -49,3 +49,21 @@ pub fn reserve(creep: screeps::objects::Creep, target: &screeps::objects::Struct
         warn!("couldn't reserve: {:?}", r);
     }
 }
+
+pub fn repair_local_road(creep: &screeps::objects::Creep) -> bool {
+    let position = creep.pos();
+    let structures = position.look_for(screeps::look::STRUCTURES);
+
+    for structure in structures {
+        match structure.as_attackable() {
+            Some(attackable) => {
+                if attackable.hits() + 100 < attackable.hits_max() {
+                    creep.repair(&structure);
+                    return true;
+                }
+            }
+            None => (),
+        }
+    }
+    return false;
+}

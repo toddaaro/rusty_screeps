@@ -30,6 +30,10 @@ impl AvailableJobs {
         }
     }
 
+    pub fn pop_reserve_job(&mut self) -> Option<String> {
+        self.reserve_jobs.pop()
+    }
+
     pub fn pop_harvest_job_for_room(
         &mut self,
         room_name: screeps::local::RoomName,
