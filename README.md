@@ -1,7 +1,7 @@
 # rusty_screeps
 
 A very hacky and not-at-all good set of fooling around with [Screeps][screeps], a Javascript 
-MMO Gamebut in Rust. This project is build using the [`screeps-game-api`] bindings from the 
+MMO Game but in Rust. This project is built using the [`screeps-game-api`] bindings from the 
 [rustyscreeps] organization.
 
 It's also recommended to use [`cargo-screeps`] for uploading the code, but the code should still
