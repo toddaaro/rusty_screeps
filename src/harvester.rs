@@ -1,6 +1,6 @@
 use crate::{creep_actions, job_manager};
 use log::*;
-use screeps::{find, prelude::*, ObjectId, ResourceType, ReturnCode};
+use screeps::{find, prelude::*, ResourceType};
 
 pub fn run_harvester(
     creep: screeps::objects::Creep,
@@ -12,8 +12,6 @@ pub fn run_harvester(
     if creep.spawning() {
         return;
     }
-
-    // first check: did we fill up with energy or did we run out? if so, update what we're doing
 
     if creep.memory().bool("harvesting") {
         if creep.store_free_capacity(Some(ResourceType::Energy)) == 0 {
@@ -33,40 +31,18 @@ pub fn run_harvester(
         }
     }
 
-    // second check: if we're harvesting, go do that. if we're using energy, go do that
-
     if creep.memory().bool("harvesting") && creep.memory().string("source").unwrap().is_some() {
-        let source_id_raw = creep.memory().string("source");
-        let source_id: ObjectId<screeps::objects::Source> =
-            source_id_raw.unwrap().unwrap().parse().unwrap();
-        let source_opt = screeps::game::get_object_typed(source_id).unwrap();
-
-        match source_opt {
-            Some(source) => {
-                let near_to_result = creep.pos().is_near_to(&source);
-                if near_to_result {
-                    let r = creep.harvest(&source);
-                    if r != ReturnCode::Ok {
-                        debug!("couldn't harvest: {:?}", r)
-                    }
-                } else {
-                    creep.move_to(&source);
-                }
-            }
-            None => {
-                creep.memory().del("source");
-            }
-        }
+        creep_actions::harvest(&creep)
     } else {
         if creep.energy() == 0 {
             creep.memory().set("harvesting", true);
         } else {
-            spend_energy(creep)
+            spend_energy(creep, available_jobs)
         }
     }
 }
 
-fn spend_energy(creep: screeps::objects::Creep) {
+fn spend_energy(creep: screeps::objects::Creep, available_jobs: &mut job_manager::AvailableJobs) {
     if creep_actions::repair_local_road(&creep) {
         return;
     }
@@ -78,8 +54,13 @@ fn spend_energy(creep: screeps::objects::Creep) {
         .unwrap_or_else(|| log_panic("home_room value was None"));
     let home_room_name = screeps::local::RoomName::new(&home_room_name_str).unwrap();
     let home_room = screeps::game::rooms::get(home_room_name).unwrap();
+    let current_room_name = creep.room().unwrap().name();
 
-    let construction_sites = creep.room().unwrap().find(find::MY_CONSTRUCTION_SITES);
+    let default = vec![];
+    let construction_sites = available_jobs
+        .jobs_by_room
+        .get(&current_room_name)
+        .map_or(&default, |room_jobs| &room_jobs.construction_jobs);
 
     let structures = home_room.find(find::STRUCTURES);
     let mut towers: std::vec::Vec<screeps::objects::Structure> = vec![];

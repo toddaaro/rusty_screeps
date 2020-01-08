@@ -15,6 +15,16 @@ use std::rc::Rc;
 
 pub struct RoomJobs {
     pub harvest_jobs: std::vec::Vec<Rc<screeps::objects::Source>>,
+    pub construction_jobs: std::vec::Vec<Rc<screeps::objects::ConstructionSite>>,
+}
+
+impl RoomJobs {
+    pub fn new() -> RoomJobs {
+        RoomJobs {
+            harvest_jobs: vec![],
+            construction_jobs: vec![],
+        }
+    }
 }
 
 pub struct AvailableJobs {
@@ -24,6 +34,14 @@ pub struct AvailableJobs {
 
 impl AvailableJobs {
     pub fn new() -> AvailableJobs {
+        let mem = screeps::memory::root();
+        let mut jobs_by_room: std::collections::HashMap<String, RoomJobs> =
+            std::collections::HashMap::new();
+        let worked_rooms: Vec<String> = mem.arr("worked_rooms").unwrap().unwrap();
+        for room in worked_rooms {
+            jobs_by_room.insert(room, RoomJobs::new());
+        }
+
         AvailableJobs {
             reserve_jobs: vec![],
             jobs_by_room: std::collections::HashMap::new(),
@@ -71,6 +89,7 @@ pub fn build_job_set() -> AvailableJobs {
 
     find_reserve_jobs(&mut available_jobs);
     find_harvest_jobs(&mut available_jobs);
+    find_construction_jobs(&mut available_jobs);
 
     return available_jobs;
 }
@@ -143,10 +162,29 @@ fn find_harvest_jobs(availabe_jobs: &mut AvailableJobs) {
             let in_room = availabe_jobs
                 .jobs_by_room
                 .entry(source.room().unwrap().name())
-                .or_insert(RoomJobs {
-                    harvest_jobs: vec![],
-                });
+                .or_insert(RoomJobs::new());
             in_room.harvest_jobs.push(Rc::new(source));
         }
+    }
+}
+
+fn find_construction_jobs(available_jobs: &mut AvailableJobs) {
+    let mem = screeps::memory::root();
+    let worked_rooms: Vec<String> = mem.arr("worked_rooms").unwrap().unwrap();
+    for room_str in worked_rooms {
+        let room_name = screeps::local::RoomName::new(&room_str).unwrap();
+        let room_res = screeps::game::rooms::get(room_name);
+        match room_res {
+            Some(room) => {
+                for construction_site in room.find(find::MY_CONSTRUCTION_SITES) {
+                    let in_room = available_jobs
+                        .jobs_by_room
+                        .entry(construction_site.room().unwrap().name())
+                        .or_insert(RoomJobs::new());
+                    in_room.construction_jobs.push(Rc::new(construction_site));
+                }
+            }
+            _ => (),
+        };
     }
 }

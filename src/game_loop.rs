@@ -13,7 +13,7 @@ pub fn game_loop() {
     mem.set("fillers", 2);
     mem.set("reservers", 2);
     mem.set("reserved_rooms", vec!["W43S28", "W44S29"]);
-    mem.set("upgraders", 4);
+    mem.set("upgraders", 6);
 
     let mut available_jobs = job_manager::build_job_set();
 
