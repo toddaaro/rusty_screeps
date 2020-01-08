@@ -2,7 +2,7 @@ use crate::{creep_actions, job_manager};
 use log::*;
 use screeps::{find, prelude::*, ResourceType};
 
-pub fn run_harvester(
+pub fn run_settler(
     creep: screeps::objects::Creep,
     available_jobs: &mut job_manager::AvailableJobs,
 ) {
@@ -18,10 +18,7 @@ pub fn run_harvester(
             creep.memory().set("harvesting", false);
             creep.memory().del("source");
         } else if creep.memory().string("source").unwrap().is_none() {
-            match available_jobs
-                .pop_harvest_job_for_room(creep.room().unwrap().name())
-                .or_else(|| available_jobs.pop_harvest_job_any())
-            {
+            match available_jobs.pop_harvest_job_for_room(creep.room().unwrap().name()) {
                 Some(target_source) => {
                     creep.memory().set("source", target_source.id().to_string());
                     creep.memory().set("harvesting", true);
@@ -47,21 +44,8 @@ fn spend_energy(creep: screeps::objects::Creep, available_jobs: &mut job_manager
         return;
     }
 
-    let mem = screeps::memory::root();
-
-    let main_room_str = mem
-        .string("home_room")
-        .unwrap_or_else(|_| log_panic("unable to load home_room"))
-        .unwrap_or_else(|| log_panic("home_room value was None"));
-
-    let home_room_name_str = creep
-        .memory()
-        .string("home_room")
-        .unwrap()
-        .unwrap_or(main_room_str);
-    let home_room_name = screeps::local::RoomName::new(&home_room_name_str).unwrap();
-    let home_room = screeps::game::rooms::get(home_room_name).unwrap();
-    let current_room_name = creep.room().unwrap().name();
+    let room = creep.room().unwrap();
+    let current_room_name = room.name();
 
     let default = vec![];
     let construction_sites = available_jobs
@@ -69,7 +53,7 @@ fn spend_energy(creep: screeps::objects::Creep, available_jobs: &mut job_manager
         .get(&current_room_name)
         .map_or(&default, |room_jobs| &room_jobs.construction_jobs);
 
-    let structures = home_room.find(find::STRUCTURES);
+    let structures = room.find(find::STRUCTURES);
     let mut towers: std::vec::Vec<screeps::objects::Structure> = vec![];
     let mut extensions: std::vec::Vec<screeps::objects::Structure> = vec![];
     for my_structure in structures {
@@ -88,22 +72,17 @@ fn spend_energy(creep: screeps::objects::Creep, available_jobs: &mut job_manager
         };
     }
 
-    if home_room.storage().unwrap().energy() < 2000 {
-        let the_storage = home_room.storage().unwrap();
+    if towers.len() > 0 {
+        creep_actions::fill(creep, &towers[0]);
+    } else if extensions.len() > 0 {
+        creep_actions::fill(creep, &extensions[0]);
+    } else if room.storage().map_or(1000000, |store| store.energy()) < 2000 {
+        let the_storage = room.storage().unwrap();
         let as_structure = screeps::objects::Structure::Storage(the_storage);
         creep_actions::fill(creep, &as_structure);
     } else if construction_sites.len() > 0 {
         creep_actions::build(creep, &construction_sites[0]);
-    } else if home_room.storage().unwrap().energy() < 950000 {
-        let the_storage = home_room.storage().unwrap();
-        let as_structure = screeps::objects::Structure::Storage(the_storage);
-        creep_actions::fill(creep, &as_structure);
     } else {
-        creep_actions::upgrade_controller(creep, &home_room.controller().unwrap());
+        creep_actions::upgrade_controller(creep, &room.controller().unwrap());
     };
-}
-
-fn log_panic<T>(message: &str) -> T {
-    error!("unable to unwrap value: {}", message);
-    panic!()
 }

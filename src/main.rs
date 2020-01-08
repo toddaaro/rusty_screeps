@@ -7,6 +7,7 @@ mod harvester;
 mod job_manager;
 mod logging;
 mod reserver;
+mod settler;
 mod spawner;
 mod tower;
 mod upgrader;

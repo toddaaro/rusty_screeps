@@ -1,5 +1,5 @@
 use crate::util::cleanup_memory;
-use crate::{filler, harvester, job_manager, reserver, spawner, tower, upgrader};
+use crate::{filler, harvester, job_manager, reserver, settler, spawner, tower, upgrader};
 use log::*;
 use screeps::{find, prelude::*};
 
@@ -14,6 +14,7 @@ pub fn game_loop() {
     mem.set("reservers", 2);
     mem.set("reserved_rooms", vec!["W43S28", "W44S29"]);
     mem.set("upgraders", 6);
+    mem.set("settlers", 2); // always some backups...
 
     let mut available_jobs = job_manager::build_job_set();
 
@@ -48,7 +49,9 @@ pub fn game_loop() {
         }
 
         let creep_type = creep.memory().string("type").unwrap();
-        if creep_type == Some("harvester".to_string()) {
+        if creep_type == Some("settler".to_string()) {
+            settler::run_settler(creep, &mut available_jobs);
+        } else if creep_type == Some("harvester".to_string()) {
             harvester::run_harvester(creep, &mut available_jobs);
         } else if creep_type == Some("filler".to_string()) {
             filler::run_filler(creep);

@@ -1,5 +1,5 @@
 use log::*;
-use screeps::{prelude::*, ResourceType, ReturnCode, ObjectId};
+use screeps::{prelude::*, ObjectId, ResourceType, ReturnCode};
 use std::cmp::min;
 
 pub fn upgrade_controller(

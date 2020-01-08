@@ -12,12 +12,14 @@ pub fn run_spawn(spawn: screeps::objects::StructureSpawn) {
     let filler_goal = mem.i32("fillers").unwrap().unwrap();
     let reserver_goal = mem.i32("reservers").unwrap().unwrap();
     let upgrader_goal = mem.i32("upgraders").unwrap().unwrap();
+    let settler_goal = mem.i32("settlers").unwrap().unwrap();
 
     let current_creeps = screeps::game::creeps::values();
     let mut current_harvesters: std::vec::Vec<screeps::objects::Creep> = vec![];
     let mut current_fillers: std::vec::Vec<screeps::objects::Creep> = vec![];
     let mut current_reservers: std::vec::Vec<screeps::objects::Creep> = vec![];
     let mut current_upgraders: std::vec::Vec<screeps::objects::Creep> = vec![];
+    let mut current_settlers: std::vec::Vec<screeps::objects::Creep> = vec![];
 
     for creep in current_creeps {
         let creep_type = creep.memory().string("type").unwrap().unwrap();
@@ -26,10 +28,14 @@ pub fn run_spawn(spawn: screeps::objects::StructureSpawn) {
             "filler" => current_fillers.push(creep),
             "reserver" => current_reservers.push(creep),
             "upgrader" => current_upgraders.push(creep),
+            "settler" => current_settlers.push(creep),
             _ => (),
         }
     }
-    if current_fillers.len() < usize::try_from(filler_goal).unwrap() {
+
+    if current_settlers.len() < usize::try_from(settler_goal).unwrap() {
+        build_settler(spawn);
+    } else if current_fillers.len() < usize::try_from(filler_goal).unwrap() {
         build_filler(spawn);
     } else if current_harvesters.len() < usize::try_from(harvester_goal).unwrap() {
         build_harvester(spawn);
@@ -37,6 +43,13 @@ pub fn run_spawn(spawn: screeps::objects::StructureSpawn) {
         build_reserver(spawn);
     } else if current_upgraders.len() < usize::try_from(upgrader_goal).unwrap() {
         build_upgrader(spawn);
+    }
+}
+
+fn build_settler(spawn: screeps::objects::StructureSpawn) {
+    let small = vec![Part::Move, Part::Move, Part::Carry, Part::Work];
+    if dry_run_build(&spawn, &small) {
+        build_creep(spawn, "harvester", small);
     }
 }
 
@@ -89,8 +102,21 @@ fn build_filler(spawn: screeps::objects::StructureSpawn) {
         Part::Carry,
         Part::Carry,
     ];
+    let large = vec![
+        Part::Move,
+        Part::Move,
+        Part::Move,
+        Part::Carry,
+        Part::Carry,
+        Part::Carry,
+        Part::Carry,
+        Part::Carry,
+        Part::Carry,
+    ];
 
-    if dry_run_build(&spawn, &medium) {
+    if dry_run_build(&spawn, &large) {
+        build_creep(spawn, "filler", large);
+    } else if dry_run_build(&spawn, &medium) {
         build_creep(spawn, "filler", medium);
     } else if dry_run_build(&spawn, &small) {
         build_creep(spawn, "filler", small);

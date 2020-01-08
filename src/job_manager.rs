@@ -154,10 +154,11 @@ fn find_harvest_jobs(availabe_jobs: &mut AvailableJobs) {
     }
 
     let harvester_target = mem.i32("harvesters").unwrap().unwrap();
+    let settler_target = mem.i32("settlers").unwrap().unwrap();
     let worked_resource_count = worked_resources.values().len();
 
     for (source_id, count) in worked_resources {
-        if count < harvester_target / worked_resource_count as i32 {
+        if count < (harvester_target + settler_target) / worked_resource_count as i32 {
             let source = source_id.try_resolve().unwrap().unwrap();
             let in_room = availabe_jobs
                 .jobs_by_room
