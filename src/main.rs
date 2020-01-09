@@ -3,6 +3,7 @@ use stdweb::js;
 mod creep_actions;
 mod filler;
 mod game_loop;
+mod goals;
 mod harvester;
 mod job_manager;
 mod logging;

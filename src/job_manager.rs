@@ -153,8 +153,11 @@ fn find_harvest_jobs(availabe_jobs: &mut AvailableJobs) {
         };
     }
 
-    let harvester_target = mem.i32("harvesters").unwrap().unwrap();
-    let settler_target = mem.i32("settlers").unwrap().unwrap();
+    let harvester_target = mem
+        .path_i32("spawn_goals.W44S28.harvester")
+        .unwrap()
+        .unwrap();
+    let settler_target = mem.path_i32("spawn_goals.W44S28.settler").unwrap().unwrap();
     let worked_resource_count = worked_resources.values().len();
 
     for (source_id, count) in worked_resources {

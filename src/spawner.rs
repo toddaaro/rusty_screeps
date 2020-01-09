@@ -3,16 +3,23 @@ use screeps::memory::MemoryReference;
 use screeps::{prelude::*, Part, ReturnCode, SpawnOptions};
 use std::convert::TryFrom;
 
+fn get_goal(spawn_room: &str, creep_type: &str) -> i32 {
+    let mem = screeps::memory::root();
+    mem.path_i32(&format!("spawn_goals.{}.{}", spawn_room, creep_type))
+        .unwrap()
+        .unwrap()
+}
+
 pub fn run_spawn(spawn: screeps::objects::StructureSpawn) {
     debug!("running spawn {}", spawn.name());
+    let raw_name = &spawn.room().unwrap().name().to_string();
 
     // find out what our current goals are
-    let mem = screeps::memory::root();
-    let harvester_goal = mem.i32("harvesters").unwrap().unwrap();
-    let filler_goal = mem.i32("fillers").unwrap().unwrap();
-    let reserver_goal = mem.i32("reservers").unwrap().unwrap();
-    let upgrader_goal = mem.i32("upgraders").unwrap().unwrap();
-    let settler_goal = mem.i32("settlers").unwrap().unwrap();
+    let harvester_goal = get_goal(raw_name, "harvester");
+    let filler_goal = get_goal(raw_name, "filler");
+    let reserver_goal = get_goal(raw_name, "reserver");
+    let upgrader_goal = get_goal(raw_name, "upgrader");
+    let settler_goal = get_goal(raw_name, "settler");
 
     let current_creeps = screeps::game::creeps::values();
     let mut current_harvesters: std::vec::Vec<screeps::objects::Creep> = vec![];
