@@ -91,13 +91,13 @@ fn spend_energy(creep: screeps::objects::Creep, available_jobs: &mut job_manager
     if home_room.storage().unwrap().energy() < 2000 {
         let the_storage = home_room.storage().unwrap();
         let as_structure = screeps::objects::Structure::Storage(the_storage);
-        creep_actions::fill(creep, &as_structure);
+        creep_actions::fill(&creep, &as_structure);
     } else if construction_sites.len() > 0 {
         creep_actions::build(creep, &construction_sites[0]);
     } else if home_room.storage().unwrap().energy() < 950000 {
         let the_storage = home_room.storage().unwrap();
         let as_structure = screeps::objects::Structure::Storage(the_storage);
-        creep_actions::fill(creep, &as_structure);
+        creep_actions::fill(&creep, &as_structure);
     } else {
         creep_actions::upgrade_controller(creep, &home_room.controller().unwrap());
     };

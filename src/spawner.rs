@@ -33,10 +33,10 @@ pub fn run_spawn(spawn: screeps::objects::StructureSpawn) {
         }
     }
 
-    if current_settlers.len() < usize::try_from(settler_goal).unwrap() {
-        build_settler(spawn);
-    } else if current_fillers.len() < usize::try_from(filler_goal).unwrap() {
+    if current_fillers.len() < usize::try_from(filler_goal).unwrap() {
         build_filler(spawn);
+    } else if current_settlers.len() < usize::try_from(settler_goal).unwrap() {
+        build_settler(spawn);
     } else if current_harvesters.len() < usize::try_from(harvester_goal).unwrap() {
         build_harvester(spawn);
     } else if current_reservers.len() < usize::try_from(reserver_goal).unwrap() {
@@ -49,7 +49,7 @@ pub fn run_spawn(spawn: screeps::objects::StructureSpawn) {
 fn build_settler(spawn: screeps::objects::StructureSpawn) {
     let small = vec![Part::Move, Part::Move, Part::Carry, Part::Work];
     if dry_run_build(&spawn, &small) {
-        build_creep(spawn, "harvester", small);
+        build_creep(spawn, "settler", small);
     }
 }
 

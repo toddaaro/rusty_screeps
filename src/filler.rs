@@ -30,7 +30,7 @@ pub fn run_filler(creep: screeps::objects::Creep) {
     } else {
         if creep.energy() == 0 {
             creep.memory().set("withdrawing", true);
-        } else {
+        } else if !creep_actions::fill_adjacent(&creep) {
             let structures = home_room.find(find::STRUCTURES);
             let mut towers: std::vec::Vec<screeps::objects::Structure> = vec![];
             let mut extensions: std::vec::Vec<screeps::objects::Structure> = vec![];
@@ -55,9 +55,9 @@ pub fn run_filler(creep: screeps::objects::Creep) {
                 };
             }
             if towers.len() > 0 {
-                creep_actions::fill(creep, &towers[0]);
+                creep_actions::fill(&creep, &towers[0]);
             } else if extensions.len() > 0 {
-                creep_actions::fill(creep, &extensions[0]);
+                creep_actions::fill(&creep, &extensions[0]);
             }
         }
     }

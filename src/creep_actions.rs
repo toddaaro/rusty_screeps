@@ -23,7 +23,7 @@ pub fn build(creep: screeps::objects::Creep, target_site: &screeps::objects::Con
     }
 }
 
-pub fn fill(creep: screeps::objects::Creep, fill_target: &screeps::objects::Structure) {
+pub fn fill(creep: &screeps::objects::Creep, fill_target: &screeps::objects::Structure) {
     let transferable = fill_target.as_transferable().unwrap();
     let has_store = fill_target.as_has_store().unwrap();
 
@@ -66,6 +66,35 @@ pub fn repair_local_road(creep: &screeps::objects::Creep) -> bool {
         }
     }
     return false;
+}
+
+pub fn fill_adjacent(creep: &screeps::objects::Creep) -> bool {
+    let position = creep.pos();
+    let mut fillables: Vec<screeps::objects::Structure> = vec![];
+    let structures_one_away = position.find_in_range(screeps::find::STRUCTURES, 1);
+    for structure in structures_one_away {
+        match structure {
+            screeps::Structure::Tower(ref my_tower) => {
+                if my_tower.store_free_capacity(Some(ResourceType::Energy)) > 0 {
+                    fillables.push(structure);
+                }
+            }
+            screeps::Structure::Extension(ref my_extension) => {
+                if my_extension.store_free_capacity(Some(ResourceType::Energy)) > 0 {
+                    fillables.push(structure);
+                }
+            }
+            _ => (),
+        };
+    }
+
+    match fillables.pop() {
+        Some(structure) => {
+            fill(creep, &structure);
+            return true;
+        }
+        None => return false,
+    }
 }
 
 pub fn harvest(creep: &screeps::objects::Creep) {
